@@ -24,7 +24,11 @@
             --radius-lg: 16px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -110,7 +114,9 @@
             font-family: inherit;
         }
 
-        input::placeholder { color: var(--text-muted); }
+        input::placeholder {
+            color: var(--text-muted);
+        }
 
         input:focus {
             border-color: var(--primary);
@@ -213,7 +219,9 @@
             display: none;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
 
         #checkingAuth {
             position: fixed;
@@ -291,12 +299,10 @@
 
         <!-- Alternância entre telas -->
         <div class="toggle-link" id="linkCriarConta">
-            Não tem conta?
-            <button onclick="mostrarCadastro()">Criar conta</button>
+            Não tem conta? <button onclick="mostrarCadastro()">Criar conta</button>
         </div>
         <div class="toggle-link" id="linkVoltar" style="display:none">
-            Já tem conta?
-            <button onclick="mostrarLogin()">Entrar</button>
+            Já tem conta? <button onclick="mostrarLogin()">Entrar</button>
         </div>
     </div>
 </div>
@@ -310,7 +316,10 @@
 
     (async () => {
         const { data: { session } } = await db.auth.getSession();
-        if (session) { window.location.href = 'index.html'; return; }
+        if (session) {
+            window.location.href = 'index.html';
+            return;
+        }
         document.getElementById('checkingAuth').style.display = 'none';
     })();
 
@@ -376,7 +385,13 @@
         btnText.textContent = 'Criando conta...';
         msg.className = 'mensagem';
 
-        const { data, error } = await db.auth.signUp({ email, password: senha });
+        const { data, error } = await db.auth.signUp({
+            email,
+            password: senha,
+            options: {
+                emailRedirectTo: window.location.origin + window.location.pathname.replace('login.html', 'index.html')
+            }
+        });
 
         btn.disabled = false;
         spinner.style.display = 'none';
@@ -384,13 +399,36 @@
 
         if (error) {
             msg.className = 'mensagem erro';
-            msg.textContent = '❌ ' + (error.message === 'User already registered' ? 'E-mail já cadastrado.' : error.message);
+            msg.textContent = '❌ ' + (error.message === 'User already registered'
+                ? 'E-mail já cadastrado.'
+                : error.message);
+            return;
+        }
+
+        // Verifica se o usuário já existe (Supabase retorna identities vazio nesse caso)
+        if (data?.user?.identities?.length === 0) {
+            msg.className = 'mensagem erro';
+            msg.textContent = '❌ Este e-mail já está cadastrado. Tente fazer login.';
             return;
         }
 
         // Se confirmação de e-mail está desativada, já redireciona
         if (data.session) {
             window.location.href = 'index.html';
+            return;
+        }
+
+        // Se o usuário foi criado e tem identities, o cadastro foi bem-sucedido
+        if (data?.user?.identities?.length > 0) {
+            // Login automático após cadastro (sem necessidade de confirmar e-mail)
+            const { error: loginError } = await db.auth.signInWithPassword({ email, password: senha });
+            if (!loginError) {
+                window.location.href = 'index.html';
+                return;
+            }
+            // Se não conseguiu fazer login automático, mostra mensagem de confirmação
+            msg.className = 'mensagem sucesso';
+            msg.textContent = '✅ Conta criada! Verifique seu e-mail para confirmar.';
             return;
         }
 
@@ -424,7 +462,11 @@
             spinner.style.display = 'none';
             btnText.textContent = 'Entrar';
             msgErro.className = 'mensagem erro';
-            msgErro.textContent = '❌ E-mail ou senha incorretos.';
+            if (error.message === 'Email not confirmed') {
+                msgErro.textContent = '❌ E-mail ainda não confirmado. Verifique sua caixa de entrada.';
+            } else {
+                msgErro.textContent = '❌ E-mail ou senha incorretos.';
+            }
             return;
         }
 

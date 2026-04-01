@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Superfarma - Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --info: #3b82f6;
+            --info-light: #dbeafe;
+            --bg-dark: #0f0f1a;
+            --bg-card: #1a1a2e;
+            --bg-elevated: #252542;
+            --border: #2d2d4a;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.4);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.5);
+            --radius-sm: 8px;
+            --radius: 12px;
+            --radius-lg: 16px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+            background: var(--bg-dark); 
+            color: var(--text-primary); 
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header { 
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elevated) 100%);
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .brand-text h1 { 
+            font-size: 1.25rem; 
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .brand-text span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        nav a {
+            padding: 10px 18px;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        nav a:hover {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+        }
+
+        nav a.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        #statusSync { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+            background: var(--bg-elevated);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        #statusSync .dot { 
+            width: 8px; 
+            height: 8px; 
+            border-radius: 50%; 
+            background: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        #statusSync.online { 
+            color: var(--success);
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        #statusSync.online .dot { 
+            background: var(--success);
+            box-shadow: 0 0 8px var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Container */
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 24px;
+            display: flex; 
+            flex-direction: column; 
+            gap: 24px; 
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .card { 
+            background: var(--bg-card); 
+            border-radius: var(--radius-lg); 
+            padding: 24px; 
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .card-icon.blue { background: var(--info-light); }
+        .card-icon.green { background: var(--success-light); }
+        .card-icon.red { background: var(--danger-light); }
+
+        .card h2 { 
+            font-size: 1rem; 
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        input, select { 
+            background: var(--bg-elevated); 
+            color: var(--text-primary); 
+            border: 1px solid var(--border); 
+            border-radius: var(--radius-sm); 
+            padding: 12px 14px; 
+            font-size: 0.95rem; 
+            width: 100%; 
+            outline: none; 
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        input::placeholder {
+            color: var(--text-muted);
+        }
+
+        input:focus, select:focus { 
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .input-row input {
+            flex: 1;
+        }
+
+        .input-row input[type="number"] {
+            max-width: 100px;
+        }
+
+        /* Autocomplete Dropdown */
+        .autocomplete-container {
+            position: relative;
+        }
+
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 50;
+            display: none;
+            box-shadow: var(--shadow-lg);
+            margin-top: 4px;
+        }
+
+        .autocomplete-dropdown.active {
+            display: block;
+        }
+
+        .autocomplete-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-item:hover,
+        .autocomplete-item.selected {
+            background: var(--primary);
+            color: white;
+        }
+
+        .autocomplete-item .highlight {
+            font-weight: 700;
+            text-decoration: underline;
+        }
+
+        .autocomplete-empty {
+            padding: 12px 14px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        /* Buttons */
+        button { 
+            border: none; 
+            border-radius: var(--radius-sm); 
+            padding: 12px 20px; 
+            font-size: 0.9rem; 
+            cursor: pointer; 
+            font-weight: 600; 
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        button:hover { 
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled { 
+            opacity: 0.5; 
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-primary { 
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); 
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-success { 
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%); 
+            color: #fff; 
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-danger { 
+            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%); 
+            color: #fff; 
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-sm { 
+            padding: 8px 14px; 
+            font-size: 0.8rem;
+            border-radius: 6px;
+        }
+
+        /* Messages */
+        .mensagem { 
+            display: none; 
+            padding: 12px 16px; 
+            border-radius: var(--radius-sm); 
+            font-weight: 500; 
+            margin-top: 12px;
+            font-size: 0.9rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .mensagem.ok { 
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .mensagem.erro { 
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* Overlay */
+        #overlay { 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(15, 15, 26, 0.95);
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center; 
+            z-index: 999;
+            gap: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .spinner-container {
+            position: relative;
+            width: 60px;
+            height: 60px;
+        }
+
+        .spinner {
+            position: absolute;
+            inset: 0;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .spinner-inner {
+            position: absolute;
+            inset: 8px;
+            border: 3px solid var(--border);
+            border-bottom-color: var(--primary-light);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite reverse;
+        }
+
+        @keyframes spin { 
+            to { transform: rotate(360deg); } 
+        }
+
+        #overlay p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* Quick Stats */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+
+        .stat-item {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 16px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .stat-item .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-item .label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 12px 16px;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            nav {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+            }
+
+            nav a {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+
+            .brand-text h1 {
+                font-size: 1.1rem;
+            }
+
+            .container {
+                padding: 16px;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .input-row {
+                flex-direction: column;
+            }
+
+            .input-row input[type="number"] {
+                max-width: 100%;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* User Menu */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-elevated);
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            font-size: 0.8rem;
+        }
+
+        .user-email {
+            color: var(--text-secondary);
+            max-width: 160px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .btn-logout {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-logout:hover {
+            background: rgba(239, 68, 68, 0.1);
+            transform: none;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="overlay">
+    <div class="spinner-container">
+        <div class="spinner"></div>
+        <div class="spinner-inner"></div>
+    </div>
+    <p>Conectando ao banco de dados...</p>
+</div>
+
+<header>
+    <div class="brand">
+        <div class="brand-icon">💊</div>
+        <div class="brand-text">
+            <h1>Superfarma</h1>
+            <span>Sistema de Estoque</span>
+        </div>
+    </div>
+    <nav>
+        <a href="index.html" class="active">⚡ Operações</a>
+        <a href="produtos.html">📦 Produtos</a>
+        <a href="movimentacoes.html">🕐 Movimentações</a>
+    </nav>
+    <div class="header-right">
+        <div id="statusSync">
+            <div class="dot"></div>
+            <span>Conectando...</span>
+        </div>
+        <div class="user-menu">
+            <span>👤</span>
+            <span class="user-email" id="userEmail"></span>
+            <button class="btn-logout" onclick="logout()">Sair</button>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <!-- Quick Stats -->
+    <div class="quick-stats" id="quickStats"></div>
+
+    <!-- Action Cards -->
+    <div class="cards-grid">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon blue">📦</div>
+                <h2>Cadastrar Produto</h2>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Nome do Produto</label>
+                <input type="text" id="nomeProduto" placeholder="Ex: Paracetamol 500mg" />
+            </div>
+            <button class="btn-primary" onclick="cadastrarProduto()">
+                <span>✓</span> Cadastrar Produto
+            </button>
+            <div class="mensagem" id="msgCadastro"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon green">📥</div>
+                <h2>Registrar Entrada</h2>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Produto</label>
+                <div class="autocomplete-container">
+                    <input type="text" id="inputEntrada" placeholder="Digite para buscar..." autocomplete="off" />
+                    <div class="autocomplete-dropdown" id="autocompleteEntrada"></div>
+                </div>
+                <input type="hidden" id="selEntrada" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Quantidade</label>
+                <div class="input-row">
+                    <input type="number" id="qtdEntrada" value="1" min="1" />
+                    <button class="btn-success" onclick="registrarEntrada()">
+                        <span>+</span> Entrada
+                    </button>
+                </div>
+            </div>
+            <div class="mensagem" id="msgEntrada"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon red">📤</div>
+                <h2>Registrar Venda</h2>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Produto</label>
+                <div class="autocomplete-container">
+                    <input type="text" id="inputSaida" placeholder="Digite para buscar..." autocomplete="off" />
+                    <div class="autocomplete-dropdown" id="autocompleteSaida"></div>
+                </div>
+                <input type="hidden" id="selSaida" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Cliente (opcional)</label>
+                <input type="text" id="clienteSaida" placeholder="Nome do cliente" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Quantidade</label>
+                <div class="input-row">
+                    <input type="number" id="qtdSaida" value="1" min="1" />
+                    <button class="btn-danger" onclick="registrarSaida()">
+                        <span>−</span> Venda
+                    </button>
+                </div>
+            </div>
+            <div class="mensagem" id="msgSaida"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ===== SUPABASE CONFIGURATION =====
+    const { createClient } = window.supabase;
+    const db = createClient(
+        'https://gbdyfjidtmlundtepyaa.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdiZHlmamlkdG1sdW5kdGVweWFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NzU2NDcsImV4cCI6MjA5MDE1MTY0N30.uCuqSBfAkSX66TjwK7WAVp4GvzmNuSWxo-XNItZzCn8'
+    );
+
+    async function verificarAuth() {
+        const { data: { session } } = await db.auth.getSession();
+        if (!session) { window.location.href = 'login.html'; return false; }
+        document.getElementById('userEmail').textContent = session.user.email;
+        return true;
+    }
+
+    async function logout() {
+        await db.auth.signOut();
+        window.location.href = 'login.html';
+    }
+
+    let BD = { produtos: [], historico: [] };
+
+    function esconderOverlay() { 
+        document.getElementById('overlay').style.display = 'none'; 
+    }
+
+    function mostrarErroOverlay(msg) {
+        document.getElementById('overlay').innerHTML = `
+            <div style="text-align:center;max-width:480px;padding:20px">
+                <div style="font-size:3rem;margin-bottom:16px">⚠️</div>
+                <div style="color:var(--danger);font-size:1.1rem;margin-bottom:20px;font-weight:600">${msg}</div>
+                <button class="btn-primary" style="margin-top:20px" onclick="location.reload()">🔄 Tentar novamente</button>
+            </div>`;
+    }
+
+    async function carregar() {
+        const [{ data: prods, error: e1 }, { data: hist, error: e2 }] = await Promise.all([
+            db.from('produtos').select('*').order('nome'),
+            db.from('historico').select('*').order('data', { ascending: false })
+        ]);
+        if (e1 || e2) {
+            mostrarErroOverlay('Erro ao carregar dados. Tente novamente.');
+            return;
+        }
+        BD.produtos = prods || [];
+        BD.historico = hist || [];
+        renderizar();
+    }
+
+    function mostrarMensagem(id, texto, tipo) {
+        const el = document.getElementById(id);
+        el.innerHTML = texto;
+        el.className = `mensagem ${tipo}`;
+        setTimeout(() => { el.className = 'mensagem'; el.innerHTML = ''; }, 4000);
+    }
+
+    async function cadastrarProduto() {
+        const nome = document.getElementById('nomeProduto').value.trim();
+        if (!nome) { mostrarMensagem('msgCadastro', '❌ Informe o nome do produto!', 'erro'); return; }
+        const { error } = await db.from('produtos').insert({ nome, saldo: 0 });
+        if (error) {
+            mostrarMensagem('msgCadastro', error.code === '23505' ? '❌ Produto já cadastrado!' : `❌ Erro: ${error.message}`, 'erro');
+            return;
+        }
+        document.getElementById('nomeProduto').value = '';
+        mostrarMensagem('msgCadastro', `✅ "${nome}" cadastrado!`, 'ok');
+        await carregar();
+    }
+
+    async function registrarEntrada() {
+        const produto = document.getElementById('selEntrada').value;
+        const quantidade = parseInt(document.getElementById('qtdEntrada').value);
+        if (!produto) { mostrarMensagem('msgEntrada', '❌ Selecione um produto!', 'erro'); return; }
+        if (isNaN(quantidade) || quantidade <= 0) { mostrarMensagem('msgEntrada', '❌ Quantidade inválida!', 'erro'); return; }
+        const prod = BD.produtos.find(p => p.nome === produto);
+        const { error: e1 } = await db.from('produtos').update({ saldo: (prod?.saldo || 0) + quantidade }).eq('nome', produto);
+        if (e1) { mostrarMensagem('msgEntrada', `❌ Erro: ${e1.message}`, 'erro'); return; }
+        const { error: e2 } = await db.from('historico').insert({ id: Date.now(), data: new Date().toISOString(), produto, tipo: 'ENTRADA', quantidade });
+        if (e2) { mostrarMensagem('msgEntrada', `❌ Erro no histórico: ${e2.message}`, 'erro'); return; }
+        document.getElementById('selEntrada').value = '';
+        document.getElementById('inputEntrada').value = '';
+        document.getElementById('qtdEntrada').value = '1';
+        mostrarMensagem('msgEntrada', `✅ Entrada: ${quantidade}x ${produto}`, 'ok');
+        await carregar();
+    }
+
+    async function registrarSaida() {
+        const produto = document.getElementById('selSaida').value;
+        const quantidade = parseInt(document.getElementById('qtdSaida').value);
+        const cliente = document.getElementById('clienteSaida').value.trim();
+        if (!produto) { mostrarMensagem('msgSaida', '❌ Selecione um produto!', 'erro'); return; }
+        if (isNaN(quantidade) || quantidade <= 0) { mostrarMensagem('msgSaida', '❌ Quantidade inválida!', 'erro'); return; }
+        const prod = BD.produtos.find(p => p.nome === produto);
+        const saldoAtual = prod?.saldo || 0;
+        if (saldoAtual < quantidade) { mostrarMensagem('msgSaida', `❌ Estoque insuficiente! Disponível: ${saldoAtual}`, 'erro'); return; }
+        const { error: e1 } = await db.from('produtos').update({ saldo: saldoAtual - quantidade }).eq('nome', produto);
+        if (e1) { mostrarMensagem('msgSaida', `❌ Erro: ${e1.message}`, 'erro'); return; }
+        const { error: e2 } = await db.from('historico').insert({ id: Date.now(), data: new Date().toISOString(), produto, tipo: 'VENDA', quantidade, cliente: cliente || null });
+        if (e2) { mostrarMensagem('msgSaida', `❌ Erro no histórico: ${e2.message}`, 'erro'); return; }
+        document.getElementById('selSaida').value = '';
+        document.getElementById('inputSaida').value = '';
+        document.getElementById('qtdSaida').value = '1';
+        document.getElementById('clienteSaida').value = '';
+        mostrarMensagem('msgSaida', `✅ Venda: ${quantidade}x ${produto}${cliente ? ` → ${cliente}` : ''}`, 'ok');
+        await carregar();
+    }
+
+    function configurarRealtime() {
+        db.channel('estoque-sync')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'produtos' }, () => carregar())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'historico' }, () => carregar())
+            .subscribe(status => {
+                const el = document.getElementById('statusSync');
+                el.className = status === 'SUBSCRIBED' ? 'online' : '';
+                el.querySelector('span').textContent = status === 'SUBSCRIBED' ? 'Sincronizado' : 'Reconectando...';
+            });
+    }
+
+    // ===== AUTOCOMPLETE =====
+    function setupAutocomplete(inputId, dropdownId, hiddenId, items) {
+        const input = document.getElementById(inputId);
+        const dropdown = document.getElementById(dropdownId);
+        const hidden = document.getElementById(hiddenId);
+        let selectedIndex = -1;
+
+        function showDropdown(filteredItems, searchTerm) {
+            if (filteredItems.length === 0) {
+                dropdown.innerHTML = '<div class="autocomplete-empty">Nenhum produto encontrado</div>';
+            } else {
+                dropdown.innerHTML = filteredItems.map((item, index) => {
+                    const highlightedName = highlightMatch(item.nome, searchTerm);
+                    return `<div class="autocomplete-item" data-index="${index}" data-value="${item.nome}">${highlightedName}</div>`;
+                }).join('');
+            }
+            dropdown.classList.add('active');
+        }
+
+        function highlightMatch(text, search) {
+            if (!search) return text;
+            const regex = new RegExp(`(${escapeRegex(search)})`, 'gi');
+            return text.replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        input.addEventListener('input', (e) => {
+            const value = e.target.value.trim().toLowerCase();
+            selectedIndex = -1;
+            if (value.length === 0) {
+                dropdown.classList.remove('active');
+                if (hidden) hidden.value = '';
+                return;
+            }
+            const filtered = items.filter(p => p.nome.toLowerCase().includes(value));
+            showDropdown(filtered, value);
+        });
+
+        input.addEventListener('keydown', (e) => {
+            const items = dropdown.querySelectorAll('.autocomplete-item:not(.autocomplete-empty)');
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+                updateSelection(items);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedIndex = Math.max(selectedIndex - 1, 0);
+                updateSelection(items);
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (selectedIndex >= 0 && items[selectedIndex]) {
+                    selectItem(items[selectedIndex]);
+                }
+            } else if (e.key === 'Escape') {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        function updateSelection(items) {
+            items.forEach((item, index) => {
+                item.classList.toggle('selected', index === selectedIndex);
+            });
+            if (items[selectedIndex]) {
+                items[selectedIndex].scrollIntoView({ block: 'nearest' });
+            }
+        }
+
+        function selectItem(item) {
+            const value = item.dataset.value;
+            input.value = value;
+            if (hidden) hidden.value = value;
+            dropdown.classList.remove('active');
+        }
+
+        dropdown.addEventListener('click', (e) => {
+            const item = e.target.closest('.autocomplete-item');
+            if (item && !item.classList.contains('autocomplete-empty')) {
+                selectItem(item);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+    }
+
+    function renderizar() {
+        esconderOverlay();
+        setupAutocomplete('inputEntrada', 'autocompleteEntrada', 'selEntrada', BD.produtos);
+        setupAutocomplete('inputSaida', 'autocompleteSaida', 'selSaida', BD.produtos);
+        
+        // Quick stats
+        const total = BD.produtos.length;
+        const zerado = BD.produtos.filter(p => p.saldo === 0).length;
+        const baixo = BD.produtos.filter(p => p.saldo > 0 && p.saldo <= 5).length;
+        const movs = BD.historico.length;
+        
+        document.getElementById('quickStats').innerHTML = `
+            <div class="stat-item">
+                <div class="value">${total}</div>
+                <div class="label">Produtos</div>
+            </div>
+            <div class="stat-item">
+                <div class="value" style="color:var(--success)">${movs}</div>
+                <div class="label">Movimentações</div>
+            </div>
+            <div class="stat-item">
+                <div class="value" style="color:var(--warning)">${baixo}</div>
+                <div class="label">Estoque Baixo</div>
+            </div>
+            <div class="stat-item">
+                <div class="value" style="color:var(--danger)">${zerado}</div>
+                <div class="label">Zerados</div>
+            </div>
+        `;
+    }
+
+    verificarAuth().then(ok => { if (ok) carregar().then(configurarRealtime); });
+</script>
+</body>
+</html>

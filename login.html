@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Superfarma - Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --danger: #ef4444;
+            --bg-dark: #0f0f1a;
+            --bg-card: #1a1a2e;
+            --bg-elevated: #252542;
+            --border: #2d2d4a;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.5);
+            --radius-sm: 8px;
+            --radius-lg: 16px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .brand-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 16px;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+        }
+
+        .login-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 6px;
+        }
+
+        .login-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            font-size: 0.95rem;
+            width: 100%;
+            outline: none;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        input::placeholder { color: var(--text-muted); }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .mensagem {
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-top: 16px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mensagem.erro {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            display: flex;
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        #checkingAuth {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99;
+        }
+
+        .check-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body>
+
+<div id="checkingAuth">
+    <div class="check-spinner"></div>
+</div>
+
+<div class="login-container">
+    <div class="login-header">
+        <div class="brand-icon">💊</div>
+        <h1>Superfarma</h1>
+        <p>Sistema de Controle de Estoque</p>
+    </div>
+
+    <div class="login-card">
+        <div class="form-group">
+            <label class="form-label">E-mail</label>
+            <input type="email" id="email" placeholder="seu@email.com" autocomplete="email" />
+        </div>
+        <div class="form-group">
+            <label class="form-label">Senha</label>
+            <input type="password" id="senha" placeholder="••••••••" autocomplete="current-password" />
+        </div>
+        <button class="btn-login" id="btnLogin" onclick="login()">
+            <div class="spinner" id="spinner"></div>
+            <span id="btnText">Entrar</span>
+        </button>
+        <div class="mensagem" id="msgErro"></div>
+    </div>
+</div>
+
+<script>
+    const { createClient } = window.supabase;
+    const db = createClient(
+        'https://gbdyfjidtmlundtepyaa.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdiZHlmamlkdG1sdW5kdGVweWFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NzU2NDcsImV4cCI6MjA5MDE1MTY0N30.uCuqSBfAkSX66TjwK7WAVp4GvzmNuSWxo-XNItZzCn8'
+    );
+
+    (async () => {
+        const { data: { session } } = await db.auth.getSession();
+        if (session) { window.location.href = 'index.html'; return; }
+        document.getElementById('checkingAuth').style.display = 'none';
+    })();
+
+    document.getElementById('email').addEventListener('keydown', e => {
+        if (e.key === 'Enter') document.getElementById('senha').focus();
+    });
+    document.getElementById('senha').addEventListener('keydown', e => {
+        if (e.key === 'Enter') login();
+    });
+
+    async function login() {
+        const email = document.getElementById('email').value.trim();
+        const senha = document.getElementById('senha').value;
+        const btn = document.getElementById('btnLogin');
+        const spinner = document.getElementById('spinner');
+        const btnText = document.getElementById('btnText');
+        const msgErro = document.getElementById('msgErro');
+
+        if (!email || !senha) {
+            msgErro.className = 'mensagem erro';
+            msgErro.textContent = '❌ Preencha e-mail e senha.';
+            return;
+        }
+
+        btn.disabled = true;
+        spinner.style.display = 'block';
+        btnText.textContent = 'Entrando...';
+        msgErro.className = 'mensagem';
+
+        const { error } = await db.auth.signInWithPassword({ email, password: senha });
+
+        if (error) {
+            btn.disabled = false;
+            spinner.style.display = 'none';
+            btnText.textContent = 'Entrar';
+            msgErro.className = 'mensagem erro';
+            msgErro.textContent = '❌ E-mail ou senha incorretos.';
+            return;
+        }
+
+        window.location.href = 'index.html';
+    }
+</script>
+</body>
+</html>

@@ -623,7 +623,7 @@
                 <h2>Produtos em Estoque</h2>
             </div>
 <div class="search-box" style="display:flex;gap:8px;align-items:center;flex:1;max-width:420px;">
-                    <input type="search" id="buscaProdutos" placeholder="Buscar produtos..." autocomplete="off">
+                    <input type="text" id="buscaProdutos" placeholder="Buscar produtos..." autocomplete="off">
                     <button class="btn-primary" onclick="aplicarFiltros()" style="white-space:nowrap;padding:12px 16px;">🔍 Buscar</button>
                 </div>
         </div>
@@ -825,7 +825,7 @@
     }
 
     // Event listeners
-    document.getElementById('buscaProdutos').addEventListener('input', aplicarFiltros);
+    document.getElementById('buscaProdutos').addEventListener('input', aplicarFiltros);         document.getElementById('buscaProdutos').addEventListener('keyup', aplicarFiltros);
         document.getElementById('buscaProdutos').addEventListener('keypress', function(e) { if (e.key === 'Enter') aplicarFiltros(); });
 
     verificarAuth().then(ok => {

@@ -779,6 +779,17 @@
         const { error: e1 } = await db.from('produtos').update({ saldo: novoSaldo }).eq('nome', mov.produto);
         const { error: e2 } = await db.from('historico').delete().eq('id', String(id));
         if (e1 || e2) { alert('Erro ao desfazer: ' + (e1 || e2).message); return; }
+            const { data: { session } } = await db.auth.getSession();
+                const userEmail = session?.user?.email || '';
+                await db.from('historico').insert({
+                            id: Date.now(),
+                            data: new Date().toISOString(),
+                            produto: mov.produto,
+                            tipo: 'DESFEITO',
+                            quantidade: mov.quantidade,
+                            cliente: mov.cliente || null,
+                            usuario: userEmail
+                                    });
         await carregar();
     }
 
@@ -867,10 +878,11 @@
         tbody.innerHTML = '';
         historicoFiltrado.forEach(mov => {
             const isEntrada = mov.tipo === 'ENTRADA';
-            const tipoBadge = isEntrada
+            const tipoBadge = mov.tipo === 'ENTRADA'
                 ? '<span class="badge badge-success"><span>↓</span> ENTRADA</span>'
-                : '<span class="badge badge-danger"><span>↑</span> VENDA</span>';
-            
+                : mov.tipo === 'DESFEITO'
+                    ? '<span class="badge" style="background:rgba(251,191,36,0.15);color:#f59e0b"><span>↩️</span> DESFEITO</span>'
+                    : '<span class="badge badge-danger"><span>↑</span> VENDA</span>';
             const data = new Date(mov.data);
             const dataFormatada = data.toLocaleDateString('pt-BR') + ' ' + data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
             
@@ -881,10 +893,9 @@
                     <td>${tipoBadge}</td>
                     <td style="font-weight:700">${mov.quantidade}</td>
                     <td style="color:${mov.cliente ? 'var(--text-primary)' : 'var(--text-muted)'}">${mov.cliente || '—'}</td>              <td style="color:var(--text-secondary);font-size:0.8rem">${mov.usuario || '—'}</td>
-                    <td>
-                        <button class="btn-danger btn-sm" onclick="desfazerMovimento('${mov.id}')">↩️ Desfazer</button>
-                    </td>
-                </tr>`;
+                                <td>
+                ${mov.tipo !== 'DESFEITO' ? `<button class="btn-danger btn-sm" onclick="desfazerMovimento('${mov.id}')">↩️ Desfazer</button>` : '<span style="color:var(--text-muted);font-size:0.8rem">—</span>'}
+            </td>
         });
         
         contador.innerHTML = `Mostrando <span class="count">${historicoFiltrado.length}</span> de ${BD.historico.length} movimentações`;

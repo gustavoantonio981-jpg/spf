@@ -744,7 +744,7 @@
     async function verificarAuth() {
         const { data: { session } } = await db.auth.getSession();
         if (!session) { window.location.href = 'login.html'; return false; }
-        document.getElementById('userEmail').textContent = session.user.email;
+        document.getElementById('userEmail').textContent = session.user.email;                 userEmailLogado = session.user.email;
         return true;
     }
 
@@ -754,6 +754,7 @@
     }
 
     let BD = { produtos: [], historico: [] };
+            let userEmailLogado = '';
 
     function esconderOverlay() { 
         document.getElementById('overlay').style.display = 'none'; 
@@ -810,7 +811,7 @@
         const prod = BD.produtos.find(p => p.nome === produto);
         const { error: e1 } = await db.from('produtos').update({ saldo: (prod?.saldo || 0) + quantidade }).eq('nome', produto);
         if (e1) { mostrarMensagem('msgEntrada', `❌ Erro: ${e1.message}`, 'erro'); return; }
-        const { error: e2 } = await db.from('historico').insert({ id: Date.now(), data: new Date().toISOString(), produto, tipo: 'ENTRADA', quantidade });
+        const { error: e2 } = await db.from('historico').insert({ id: Date.now(), data: new Date().toISOString(), produto, tipo: 'ENTRADA', quantidade, usuario: userEmailLogado });
         if (e2) { mostrarMensagem('msgEntrada', `❌ Erro no histórico: ${e2.message}`, 'erro'); return; }
         document.getElementById('selEntrada').value = '';
         document.getElementById('inputEntrada').value = '';
@@ -830,7 +831,7 @@
         if (saldoAtual < quantidade) { mostrarMensagem('msgSaida', `❌ Estoque insuficiente! Disponível: ${saldoAtual}`, 'erro'); return; }
         const { error: e1 } = await db.from('produtos').update({ saldo: saldoAtual - quantidade }).eq('nome', produto);
         if (e1) { mostrarMensagem('msgSaida', `❌ Erro: ${e1.message}`, 'erro'); return; }
-        const { error: e2 } = await db.from('historico').insert({ id: Date.now(), data: new Date().toISOString(), produto, tipo: 'VENDA', quantidade, cliente: cliente || null });
+        const { error: e2 } = await db.from('historico').insert({ id: Date.now(), data: new Date().toISOString(), produto, tipo: 'VENDA', quantidade, cliente: cliente || null , usuario: userEmailLogado});
         if (e2) { mostrarMensagem('msgSaida', `❌ Erro no histórico: ${e2.message}`, 'erro'); return; }
         document.getElementById('selSaida').value = '';
         document.getElementById('inputSaida').value = '';

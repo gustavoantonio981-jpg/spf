@@ -622,16 +622,16 @@
                 <div class="card-icon">📋</div>
                 <h2>Produtos em Estoque</h2>
             </div>
-            <div class="search-box">
-                <input type="text" id="buscaProdutos" placeholder="Buscar produtos..." autocomplete="off" />
-            </div>
+<div class="search-box" style="display:flex;gap:8px;align-items:center;flex:1;max-width:420px;">
+                    <input type="search" id="buscaProdutos" placeholder="Buscar produtos..." autocomplete="off">
+                    <button class="btn-primary" onclick="aplicarFiltros()" style="white-space:nowrap;padding:12px 16px;">🔍 Buscar</button>
+                </div>
         </div>
 
-        <div class="filter-buttons">
-            <button class="filter-btn active" onclick="filtrarPorStatus('todos')">Todos</button>
-            <button class="filter-btn" onclick="filtrarPorStatus('ok')">✓ Em Dia</button>
-            <button class="filter-btn" onclick="filtrarPorStatus('baixo')">⚠️ Estoque Baixo</button>
-            <button class="filter-btn" onclick="filtrarPorStatus('zerado')">🚫 Zerados</button>
+        <button class="filter-btn active" onclick="filtrarPorStatus('todos', this)">Todos</button>
+            <button class="filter-btn" onclick="filtrarPorStatus('ok', this)">✓ Em Dia</button>
+            <button class="filter-btn" onclick="filtrarPorStatus('baixo', this)">⚠️ Estoque Baixo</button>
+                        <button class="filter-btn" onclick="filtrarPorStatus('zerado', this)">🚫 Zerados</button>
         </div>
 
         <div class="table-container" style="margin-top: 16px;">
@@ -722,10 +722,10 @@
         await carregar();
     }
 
-    function filtrarPorStatus(status) {
+    function filtrarPorStatus(status, btn) {
         filtroStatus = status;
         document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
+        btn.classList.add('active');
         aplicarFiltros();
     }
 
@@ -826,6 +826,7 @@
 
     // Event listeners
     document.getElementById('buscaProdutos').addEventListener('input', aplicarFiltros);
+        document.getElementById('buscaProdutos').addEventListener('keypress', function(e) { if (e.key === 'Enter') aplicarFiltros(); });
 
     verificarAuth().then(ok => {
         if (ok) carregar().then(() => {

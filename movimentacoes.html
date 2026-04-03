@@ -747,6 +747,7 @@
     }
 
     async function carregar() {
+        try {
         const [{ data: prods }, { data: hist }] = await Promise.all([
             db.from('produtos').select('*'),
             db.from('historico').select('*').order('data', { ascending: false })
@@ -756,7 +757,8 @@
         historicoFiltrado = [...BD.historico];
         aplicarFiltros();
         atualizarSummary();
-    }
+        } catch(err) { esconderOverlay(); alert('Erro ao carregar: ' + err.message); }
+        }
 
     function configurarRealtime() {
         db.channel('estoque-movs')
@@ -896,6 +898,7 @@
                                 <td>
                 ${mov.tipo !== 'DESFEITO' ? `<button class="btn-danger btn-sm" onclick="desfazerMovimento('${mov.id}')">↩️ Desfazer</button>` : '<span style="color:var(--text-muted);font-size:0.8rem">—</span>'}
             </td>
+                        </tr>
         });
         
         contador.innerHTML = `Mostrando <span class="count">${historicoFiltrado.length}</span> de ${BD.historico.length} movimentações`;

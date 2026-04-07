@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Superfarma - Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Intehr:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #6366f1;
@@ -716,8 +716,8 @@
                 <input type="hidden" id="selSaida" />
             </div>
             <div class="form-group">
-                <label class="form-label">Cliente (opcional)</label>
-                <input type="text" id="clienteSaida" placeholder="Nome do cliente" />
+                <label class="form-label">Cliente (obrigatório)</label>
+                <input type="text" id="clienteSaida" placeholder="Nome do cliente (obrigatório)" required />
             </div>
             <div class="form-group">
                 <label class="form-label">Quantidade</label>
@@ -732,9 +732,7 @@
         </div>
     </div>
 </div>
-
-<script>
-    // ===== SUPABASE CONFIGURATION =====
+clienteSaida    // ===== SUPABASE CONFIGURATION =====
     const { createClient } = window.supabase;
     const db = createClient(
         'https://gbdyfjidtmlundtepyaa.supabase.co',
@@ -825,6 +823,7 @@
         const quantidade = parseInt(document.getElementById('qtdSaida').value);
         const cliente = document.getElementById('clienteSaida').value.trim();
         if (!produto) { mostrarMensagem('msgSaida', '❌ Selecione um produto!', 'erro'); return; }
+        if (!cliente) { mostrarMensagem('msgSaida', '❌ Informe o nome do cliente!', 'erro'); document.getElementById('clienteSaida').focus(); return; }
         if (isNaN(quantidade) || quantidade <= 0) { mostrarMensagem('msgSaida', '❌ Quantidade inválida!', 'erro'); return; }
         const prod = BD.produtos.find(p => p.nome === produto);
         const saldoAtual = prod?.saldo || 0;

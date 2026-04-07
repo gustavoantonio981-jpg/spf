@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Superfarma - Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Intehr:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #6366f1;
@@ -716,7 +716,7 @@
                 <input type="hidden" id="selSaida" />
             </div>
             <div class="form-group">
-                <label class="form-label">Cliente (obrigatório)</label>
+                <label class="form-label">Cliente (obrigatório) <span style="color:var(--danger)">*</span></label>
                 <input type="text" id="clienteSaida" placeholder="Nome do cliente (obrigatório)" required />
             </div>
             <div class="form-group">
@@ -732,7 +732,9 @@
         </div>
     </div>
 </div>
-clienteSaida    // ===== SUPABASE CONFIGURATION =====
+
+<script>
+    // ===== SUPABASE CONFIGURATION =====
     const { createClient } = window.supabase;
     const db = createClient(
         'https://gbdyfjidtmlundtepyaa.supabase.co',

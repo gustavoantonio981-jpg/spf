@@ -314,6 +314,9 @@
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdiZHlmamlkdG1sdW5kdGVweWFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NzU2NDcsImV4cCI6MjA5MDE1MTY0N30.uCuqSBfAkSX66TjwK7WAVp4GvzmNuSWxo-XNItZzCn8'
     );
 
+    // TODO: reabilitar cadastros quando o Gustavo autorizar
+    const REGISTRATION_ENABLED = false;
+
     (async () => {
         const { data: { session } } = await db.auth.getSession();
         if (session) {
@@ -321,6 +324,9 @@
             return;
         }
         document.getElementById('checkingAuth').style.display = 'none';
+        if (!REGISTRATION_ENABLED) {
+            document.getElementById('linkCriarConta').style.display = 'none';
+        }
     })();
 
     document.getElementById('email').addEventListener('keydown', e => {
@@ -356,6 +362,14 @@
     }
 
     async function cadastrar() {
+        // TODO: reabilitar cadastros quando o Gustavo autorizar
+        if (!REGISTRATION_ENABLED) {
+            const msg = document.getElementById('msgCad');
+            msg.className = 'mensagem erro';
+            msg.textContent = '❌ Cadastros temporariamente suspensos. Tente novamente mais tarde.';
+            return;
+        }
+
         const email = document.getElementById('emailCad').value.trim();
         const senha = document.getElementById('senhaCad').value;
         const confirma = document.getElementById('senhaConfirm').value;

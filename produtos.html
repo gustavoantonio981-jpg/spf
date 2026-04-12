@@ -33,921 +33,494 @@
             --radius: 12px;
             --radius-lg: 16px;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body { 
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
-            background: var(--bg-dark); 
-            color: var(--text-primary); 
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
             min-height: 100vh;
             line-height: 1.6;
         }
-
-        /* Header */
-        header { 
+        header {
             background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elevated) 100%);
             padding: 16px 24px;
             border-bottom: 1px solid var(--border);
-            display: flex; 
-            align-items: center; 
+            display: flex;
+            align-items: center;
             justify-content: space-between;
             position: sticky;
             top: 0;
             z-index: 100;
             backdrop-filter: blur(10px);
         }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
+        .brand { display: flex; align-items: center; gap: 12px; }
         .brand-icon {
-            width: 44px;
-            height: 44px;
+            width: 44px; height: 44px;
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             border-radius: var(--radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             font-size: 1.5rem;
             box-shadow: var(--shadow);
         }
-
-        .brand-text h1 { 
-            font-size: 1.25rem; 
-            font-weight: 700;
+        .brand-text h1 {
+            font-size: 1.25rem; font-weight: 700;
             background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
-
-        .brand-text span {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        /* Navigation */
-        nav {
-            display: flex;
-            gap: 8px;
-        }
-
+        .brand-text span { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+        nav { display: flex; gap: 8px; }
         nav a {
-            padding: 10px 18px;
-            border-radius: var(--radius-sm);
-            text-decoration: none;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            font-weight: 500;
+            padding: 10px 18px; border-radius: var(--radius-sm);
+            text-decoration: none; color: var(--text-secondary);
+            font-size: 0.9rem; font-weight: 500;
             transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            display: flex; align-items: center; gap: 8px;
         }
-
-        nav a:hover {
+        nav a:hover { background: var(--bg-elevated); color: var(--text-primary); }
+        nav a.active { background: var(--primary); color: white; }
+        #statusSync {
+            display: flex; align-items: center; gap: 8px;
             background: var(--bg-elevated);
-            color: var(--text-primary);
+            padding: 8px 14px; border-radius: 20px;
+            font-size: 0.8rem; color: var(--text-muted);
+            border: 1px solid var(--border); transition: all 0.3s ease;
         }
-
-        nav a.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        #statusSync { 
-            display: flex; 
-            align-items: center; 
-            gap: 8px;
-            background: var(--bg-elevated);
-            padding: 8px 14px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            border: 1px solid var(--border);
-            transition: all 0.3s ease;
-        }
-
-        #statusSync .dot { 
-            width: 8px; 
-            height: 8px; 
-            border-radius: 50%; 
-            background: var(--text-muted);
-            transition: all 0.3s ease;
-        }
-
-        #statusSync.online { 
-            color: var(--success);
-            border-color: var(--success);
-            background: rgba(16, 185, 129, 0.1);
-        }
-
-        #statusSync.online .dot { 
-            background: var(--success);
-            box-shadow: 0 0 8px var(--success);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Container */
-        .container { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            padding: 24px;
-            display: flex; 
-            flex-direction: column; 
-            gap: 24px; 
-        }
-
-        /* Card */
-        .card { 
-            background: var(--bg-card); 
-            border-radius: var(--radius-lg); 
-            padding: 24px; 
-            border: 1px solid var(--border);
-        }
-
+        #statusSync .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); transition: all 0.3s ease; }
+        #statusSync.online { color: var(--success); border-color: var(--success); background: rgba(16,185,129,0.1); }
+        #statusSync.online .dot { background: var(--success); box-shadow: 0 0 8px var(--success); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px; display: flex; flex-direction: column; gap: 24px; }
+        .card { background: var(--bg-card); border-radius: var(--radius-lg); padding: 24px; border: 1px solid var(--border); }
         .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--border);
-            flex-wrap: wrap;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 16px; margin-bottom: 20px; padding-bottom: 16px;
+            border-bottom: 1px solid var(--border); flex-wrap: wrap;
         }
-
-        .card-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
+        .card-title { display: flex; align-items: center; gap: 12px; }
         .card-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: var(--radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            background: rgba(99, 102, 241, 0.15);
+            width: 40px; height: 40px; border-radius: var(--radius);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.25rem; background: rgba(99,102,241,0.15);
         }
-
-        .card h2 { 
-            font-size: 1.1rem; 
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        /* Search */
-        .search-box {
-            position: relative;
-            flex: 1;
-            max-width: 400px;
-        }
-
+        .card h2 { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); }
+        .search-box { position: relative; flex: 1; max-width: 400px; }
         .search-box input {
-            background: var(--bg-elevated); 
-            color: var(--text-primary); 
-            border: 1px solid var(--border); 
-            border-radius: var(--radius-sm); 
-            padding: 12px 14px 12px 42px; 
-            font-size: 0.95rem; 
-            width: 100%; 
-            outline: none; 
-            transition: all 0.2s ease;
+            background: var(--bg-elevated); color: var(--text-primary);
+            border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 12px 14px 12px 42px; font-size: 0.95rem;
+            width: 100%; outline: none; transition: all 0.2s ease;
         }
-
         .search-box::before {
-            content: '🔍';
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1rem;
-            opacity: 0.6;
+            content: '🔍'; position: absolute;
+            left: 14px; top: 50%; transform: translateY(-50%);
+            font-size: 1rem; opacity: 0.6; pointer-events: none; z-index: 1;
         }
-
-        .search-box input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
-        }
-
-        /* Autocomplete Suggestions */
+        .search-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
         .autocomplete-dropdown {
-            position: absolute;
-            top: calc(100% + 4px);
-            left: 0; right: 0;
-            background: var(--bg-elevated);
-            border: 1px solid var(--primary);
-            border-radius: var(--radius-sm);
-            max-height: 240px;
-            overflow-y: auto;
-            z-index: 200;
-            box-shadow: var(--shadow-lg);
-            display: none;
+            position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+            background: var(--bg-elevated); border: 1px solid var(--primary);
+            border-radius: var(--radius-sm); max-height: 240px; overflow-y: auto;
+            z-index: 200; box-shadow: var(--shadow-lg); display: none;
         }
         .autocomplete-dropdown.aberto { display: block; }
         .autocomplete-item {
-            padding: 10px 14px 10px 42px;
-            font-size: 0.9rem;
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: background 0.15s;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            padding: 10px 14px; font-size: 0.9rem; color: var(--text-primary);
+            cursor: pointer; transition: background 0.15s;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        .autocomplete-item:hover,
-        .autocomplete-item.selecionado {
-            background: rgba(99, 102, 241, 0.2);
-            color: var(--primary-light);
+        .autocomplete-item:hover, .autocomplete-item.selecionado {
+            background: rgba(99,102,241,0.2); color: var(--primary-light);
         }
         .autocomplete-item strong { color: var(--primary-light); }
-                /* Filter Buttons */
-        .filter-buttons {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
+        .filter-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
         .filter-btn {
-            padding: 8px 14px;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            background: var(--bg-elevated);
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s;
+            padding: 8px 14px; border-radius: 20px;
+            border: 1px solid var(--border); background: var(--bg-elevated);
+            color: var(--text-secondary); font-size: 0.8rem; cursor: pointer; transition: all 0.2s;
         }
-
-        .filter-btn:hover {
-            border-color: var(--primary);
-            color: var(--text-primary);
+        .filter-btn:hover { border-color: var(--primary); color: var(--text-primary); }
+        .filter-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
+        .table-container { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        thead { background: var(--bg-elevated); }
+        th {
+            color: var(--text-secondary); padding: 14px 16px; text-align: left;
+            font-weight: 600; font-size: 0.8rem; text-transform: uppercase;
+            letter-spacing: 0.5px; white-space: nowrap; cursor: pointer; user-select: none;
         }
-
-        .filter-btn.active {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: white;
+        th:hover { color: var(--text-primary); }
+        th .sort-icon { margin-left: 4px; opacity: 0.5; }
+        td { padding: 14px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        tbody tr { transition: background 0.2s ease; }
+        tbody tr:hover { background: var(--bg-elevated); }
+        .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+        .badge-success { background: rgba(16,185,129,0.15); color: var(--success); }
+        .badge-warning { background: rgba(245,158,11,0.15); color: var(--warning); }
+        .badge-danger { background: rgba(239,68,68,0.15); color: var(--danger); }
+        button {
+            border: none; border-radius: var(--radius-sm); padding: 10px 16px;
+            font-size: 0.85rem; cursor: pointer; font-weight: 600;
+            transition: all 0.2s ease; display: inline-flex;
+            align-items: center; justify-content: center; gap: 6px; font-family: inherit;
         }
-
-        /* Table */
-        .table-container {
-            overflow-x: auto;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-        }
-
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            font-size: 0.9rem;
-        }
-
-        thead {
-            background: var(--bg-elevated);
-        }
-
-        th { 
-            color: var(--text-secondary); 
-            padding: 14px 16px; 
-            text-align: left; 
-            font-weight: 600;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        th:hover {
-            color: var(--text-primary);
-        }
-
-        th .sort-icon {
-            margin-left: 4px;
-            opacity: 0.5;
-        }
-
-        td { 
-            padding: 14px 16px; 
-            border-bottom: 1px solid var(--border);
-            vertical-align: middle;
-        }
-
-        tr:last-child td { 
-            border-bottom: none; 
-        }
-
-        tbody tr {
-            transition: background 0.2s ease;
-        }
-
-        tbody tr:hover { 
-            background: var(--bg-elevated);
-        }
-
-        /* Badges */
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .badge-success {
-            background: rgba(16, 185, 129, 0.15);
-            color: var(--success);
-        }
-
-        .badge-warning {
-            background: rgba(245, 158, 11, 0.15);
-            color: var(--warning);
-        }
-
-        .badge-danger {
-            background: rgba(239, 68, 68, 0.15);
-            color: var(--danger);
-        }
-
-        /* Buttons */
-        button { 
-            border: none; 
-            border-radius: var(--radius-sm); 
-            padding: 10px 16px; 
-            font-size: 0.85rem; 
-            cursor: pointer; 
-            font-weight: 600; 
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            font-family: inherit;
-        }
-
-        button:hover { 
-            transform: translateY(-1px);
-        }
-
-        .btn-primary { 
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); 
-            color: #fff;
-        }
-
-        .btn-danger { 
-            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%); 
-            color: #fff; 
-        }
-
-        .btn-sm { 
-            padding: 6px 12px; 
-            font-size: 0.75rem;
-        }
-
-        .actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        /* Results Counter */
+        button:hover { transform: translateY(-1px); }
+        .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; }
+        .btn-danger { background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%); color: #fff; }
+        .btn-sm { padding: 6px 12px; font-size: 0.75rem; }
+        .actions { display: flex; gap: 8px; }
         .results-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-            flex-wrap: wrap;
-            gap: 12px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);
+            flex-wrap: wrap; gap: 12px;
         }
-
-        .results-count {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
+        .results-count { font-size: 0.85rem; color: var(--text-secondary); }
+        .results-count .count { color: var(--primary); font-weight: 600; }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+        .empty-state-icon { font-size: 4rem; margin-bottom: 16px; opacity: 0.5; }
+        .empty-state h3 { color: var(--text-secondary); margin-bottom: 8px; }
+        #overlay {
+            position: fixed; inset: 0;
+            background: rgba(15,15,26,0.95);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            z-index: 999; gap: 20px; backdrop-filter: blur(10px);
         }
-
-        .results-count .count {
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-muted);
-        }
-
-        .empty-state-icon {
-            font-size: 4rem;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-
-        .empty-state h3 {
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
-
-        /* Overlay */
-        #overlay { 
-            position: fixed; 
-            inset: 0; 
-            background: rgba(15, 15, 26, 0.95);
-            display: flex; 
-            flex-direction: column;
-            align-items: center; 
-            justify-content: center; 
-            z-index: 999;
-            gap: 20px;
-            backdrop-filter: blur(10px);
-        }
-
-        .spinner-container {
-            position: relative;
-            width: 60px;
-            height: 60px;
-        }
-
+        .spinner-container { position: relative; width: 60px; height: 60px; }
         .spinner {
-            position: absolute;
-            inset: 0;
-            border: 3px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+            position: absolute; inset: 0;
+            border: 3px solid var(--border); border-top-color: var(--primary);
+            border-radius: 50%; animation: spin 1s linear infinite;
         }
-
         .spinner-inner {
-            position: absolute;
-            inset: 8px;
-            border: 3px solid var(--border);
-            border-bottom-color: var(--primary-light);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite reverse;
+            position: absolute; inset: 8px;
+            border: 3px solid var(--border); border-bottom-color: var(--primary-light);
+            border-radius: 50%; animation: spin 0.8s linear infinite reverse;
         }
-
-        @keyframes spin { 
-            to { transform: rotate(360deg); } 
-        }
-
-        /* Responsive */
+        @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 768px) {
-            header {
-                padding: 12px 16px;
-                flex-wrap: wrap;
-                gap: 12px;
-            }
-
-            nav {
-                order: 3;
-                width: 100%;
-                justify-content: center;
-            }
-
-            nav a {
-                padding: 8px 12px;
-                font-size: 0.8rem;
-            }
-
-            .card-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .search-box {
-                max-width: 100%;
-            }
-
-            .container {
-                padding: 16px;
-            }
-
-            th, td {
-                padding: 12px;
-            }
+            header { padding: 12px 16px; flex-wrap: wrap; gap: 12px; }
+            nav { order: 3; width: 100%; justify-content: center; }
+            nav a { padding: 8px 12px; font-size: 0.8rem; }
+            .card-header { flex-direction: column; align-items: stretch; }
+            .search-box { max-width: 100%; }
+            .container { padding: 16px; }
+            th, td { padding: 12px; }
         }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-dark);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-muted);
-        }
-
-        /* User Menu */
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+        .header-right { display: flex; align-items: center; gap: 12px; }
         .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--bg-elevated);
-            padding: 8px 14px;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            font-size: 0.8rem;
+            display: flex; align-items: center; gap: 10px;
+            background: var(--bg-elevated); padding: 8px 14px;
+            border-radius: 20px; border: 1px solid var(--border); font-size: 0.8rem;
         }
-
-        .user-email {
-            color: var(--text-secondary);
-            max-width: 160px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
+        .user-email { color: var(--text-secondary); max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .btn-logout {
-            background: none;
-            border: none;
-            color: var(--danger);
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 600;
-            padding: 4px 8px;
-            border-radius: 6px;
-            transition: background 0.2s;
+            background: none; border: none; color: var(--danger);
+            cursor: pointer; font-size: 0.8rem; font-weight: 600;
+            padding: 4px 8px; border-radius: 6px; transition: background 0.2s;
         }
-
-        .btn-logout:hover {
-            background: rgba(239, 68, 68, 0.1);
-            transform: none;
-            box-shadow: none;
-        }
+        .btn-logout:hover { background: rgba(239,68,68,0.1); transform: none; box-shadow: none; }
     </style>
 </head>
 <body>
-
-<div id="overlay">
-    <div class="spinner-container">
-        <div class="spinner"></div>
-        <div class="spinner-inner"></div>
-    </div>
-    <p>Carregando produtos...</p>
-</div>
-
-<header>
-    <div class="brand">
-        <div class="brand-icon">💊</div>
-        <div class="brand-text">
-            <h1>Superfarma</h1>
-            <span>Sistema de Estoque</span>
+    <div id="overlay">
+        <div class="spinner-container">
+            <div class="spinner"></div>
+            <div class="spinner-inner"></div>
         </div>
+        <p>Carregando produtos...</p>
     </div>
-    <nav>
-        <a href="index.html">⚡ Operações</a>
-        <a href="produtos.html" class="active">📦 Produtos</a>
-        <a href="movimentacoes.html">🕐 Movimentações</a>
-    </nav>
-    <div class="header-right">
-        <div id="statusSync">
-            <div class="dot"></div>
-            <span>Conectando...</span>
-        </div>
-        <div class="user-menu">
-            <span>👤</span>
-            <span class="user-email" id="userEmail"></span>
-            <button class="btn-logout" onclick="logout()">Sair</button>
-        </div>
-    </div>
-</header>
 
-<div class="container">
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title">
-                <div class="card-icon">📋</div>
-                <h2>Produtos em Estoque</h2>
+    <header>
+        <div class="brand">
+            <div class="brand-icon">💊</div>
+            <div class="brand-text">
+                <h1>Superfarma</h1>
+                <span>Sistema de Estoque</span>
             </div>
-<div class="search-box" style="display:flex;gap:8px;align-items:flex-start;flex:1;max-width:420px;">
-                <div style="position:relative;flex:1;">
-                    <input type="text" id="buscaProdutos" placeholder="Buscar produtos..." autocomplete="off">
-                    <div id="sugestoesBusca" class="autocomplete-dropdown"></div>
+        </div>
+        <nav>
+            <a href="index.html">⚡ Operações</a>
+            <a href="produtos.html" class="active">📦 Produtos</a>
+            <a href="movimentacoes.html">🕐 Movimentações</a>
+        </nav>
+        <div class="header-right">
+            <div id="statusSync">
+                <div class="dot"></div>
+                <span>Conectando...</span>
+            </div>
+            <div class="user-menu">
+                <span>👤</span>
+                <span class="user-email" id="userEmail"></span>
+                <button class="btn-logout" onclick="logout()">Sair</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="card-icon">📋</div>
+                    <h2>Produtos em Estoque</h2>
                 </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;flex:1;max-width:420px;">
+                    <div class="search-box" style="flex:1;">
+                        <input type="text" id="buscaProdutos" placeholder="Buscar produtos..." autocomplete="off">
+                        <div id="sugestoesBusca" class="autocomplete-dropdown"></div>
+                    </div>
                     <button class="btn-primary" onclick="aplicarFiltros()" style="white-space:nowrap;padding:12px 16px;">🔍 Buscar</button>
                 </div>
-        </div>
-
-        <button class="filter-btn active" onclick="filtrarPorStatus('todos', this)">Todos</button>
-            <button class="filter-btn" onclick="filtrarPorStatus('ok', this)">✓ Em Dia</button>
-            <button class="filter-btn" onclick="filtrarPorStatus('baixo', this)">⚠️ Estoque Baixo</button>
-                        <button class="filter-btn" onclick="filtrarPorStatus('zerado', this)">🚫 Zerados</button>
-        </div>
-
-        <div class="table-container" style="margin-top: 16px;">
-            <table>
-                <thead>
-                    <tr>
-                        <th onclick="ordenarPor('nome')">Produto <span class="sort-icon">↕</span></th>
-                        <th onclick="ordenarPor('saldo')">Saldo <span class="sort-icon">↕</span></th>
-                        <th>Status</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="tabelaProdutos"></tbody>
-            </table>
-        </div>
-
-        <div class="results-bar">
-            <div class="results-count" id="contadorProdutos"></div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="filter-btn active" onclick="filtrarPorStatus('todos', this)">Todos</button>
+                <button class="filter-btn" onclick="filtrarPorStatus('ok', this)">✓ Em Dia</button>
+                <button class="filter-btn" onclick="filtrarPorStatus('baixo', this)">⚠️ Estoque Baixo</button>
+                <button class="filter-btn" onclick="filtrarPorStatus('zerado', this)">🚫 Zerados</button>
+            </div>
+            <div class="table-container" style="margin-top:16px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th onclick="ordenarPor('nome')">Produto <span class="sort-icon">↕</span></th>
+                            <th onclick="ordenarPor('saldo')">Saldo <span class="sort-icon">↕</span></th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaProdutos"></tbody>
+                </table>
+            </div>
+            <div class="results-bar">
+                <div class="results-count" id="contadorProdutos"></div>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    // ===== SUPABASE CONFIGURATION =====
-    const { createClient } = window.supabase;
-    const db = createClient(
-        'https://gbdyfjidtmlundtepyaa.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdiZHlmamlkdG1sdW5kdGVweWFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NzU2NDcsImV4cCI6MjA5MDE1MTY0N30.uCuqSBfAkSX66TjwK7WAVp4GvzmNuSWxo-XNItZzCn8'
-    );
+    <script>
+        const { createClient } = window.supabase;
+        const db = createClient(
+            'https://gbdyfjidtmlundtepyaa.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdiZHlmamlkdG1sdW5kdGVweWFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NzU2NDcsImV4cCI6MjA5MDE1MTY0N30.uCuqSBfAkSX66TjwK7WAVp4GvzmNuSWxo-XNItZzCn8'
+        );
 
-    async function verificarAuth() {
-        const { data: { session } } = await db.auth.getSession();
-        if (!session) { window.location.href = 'login.html'; return false; }
-        document.getElementById('userEmail').textContent = session.user.email;
-        return true;
-    }
-
-    async function logout() {
-        await db.auth.signOut();
-        window.location.href = 'login.html';
-    }
-
-    let BD = { produtos: [] };
-    let produtosFiltrados = [];
-    let filtroStatus = 'todos';
-    let ordenacao = { coluna: 'nome', ascendente: true };
-
-    function esconderOverlay() { 
-        document.getElementById('overlay').style.display = 'none'; 
-    }
-
-    async function carregar() {
-        const { data: prods, error } = await db.from('produtos').select('*').order('nome');
-        if (error) {
-            console.error('Erro:', error);
-            return;
+        async function verificarAuth() {
+            const { data: { session } } = await db.auth.getSession();
+            if (!session) { window.location.href = 'login.html'; return false; }
+            document.getElementById('userEmail').textContent = session.user.email;
+            return true;
         }
-        BD.produtos = prods || [];
-        produtosFiltrados = [...BD.produtos];
-        aplicarFiltros();
-    }
 
-    function configurarRealtime() {
-        db.channel('estoque-produtos')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'produtos' }, () => carregar())
-            .subscribe(status => {
-                const el = document.getElementById('statusSync');
-                el.className = status === 'SUBSCRIBED' ? 'online' : '';
-                el.querySelector('span').textContent = status === 'SUBSCRIBED' ? 'Sincronizado' : 'Reconectando...';
+        async function logout() {
+            await db.auth.signOut();
+            window.location.href = 'login.html';
+        }
+
+        function esconderOverlay() {
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        let BD = { produtos: [] };
+        let produtosFiltrados = [];
+        let filtroStatus = 'todos';
+        let ordenacao = { coluna: 'nome', ascendente: true };
+
+        async function carregar() {
+            const { data: prods, error } = await db.from('produtos').select('*').order('nome');
+            if (error) { console.error('Erro:', error); esconderOverlay(); return; }
+            BD.produtos = prods || [];
+            produtosFiltrados = [...BD.produtos];
+            aplicarFiltros();
+            esconderOverlay();
+        }
+
+        function configurarRealtime() {
+            db.channel('estoque-produtos')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'produtos' }, () => carregar())
+                .subscribe(status => {
+                    const el = document.getElementById('statusSync');
+                    el.className = status === 'SUBSCRIBED' ? 'online' : '';
+                    el.querySelector('span').textContent = status === 'SUBSCRIBED' ? 'Sincronizado' : 'Reconectando...';
+                });
+        }
+
+        async function editarProduto(nome) {
+            const novo = prompt('Novo nome para "' + nome + '":', nome);
+            if (!novo || novo.trim() === nome) return;
+            const novNome = novo.trim();
+            const { error } = await db.from('produtos').update({ nome: novNome }).eq('nome', nome);
+            if (error) { alert('Erro ao renomear: ' + error.message); return; }
+            await db.from('historico').update({ produto: novNome }).eq('produto', nome);
+            await carregar();
+        }
+
+        async function deletarProduto(nome) {
+            if (!confirm('Remover "' + nome + '" e todo o histórico relacionado?')) return;
+            const { error: e1 } = await db.from('historico').delete().eq('produto', nome);
+            const { error: e2 } = await db.from('produtos').delete().eq('nome', nome);
+            if (e1 || e2) { alert('Erro ao remover: ' + (e1 || e2).message); return; }
+            await carregar();
+        }
+
+        function filtrarPorStatus(status, btn) {
+            filtroStatus = status;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            aplicarFiltros();
+        }
+
+        function aplicarFiltros() {
+            const busca = document.getElementById('buscaProdutos').value.trim().toLowerCase();
+            produtosFiltrados = BD.produtos.filter(p => {
+                const matchBusca = !busca || p.nome.toLowerCase().includes(busca);
+                let matchStatus = true;
+                if (filtroStatus === 'ok') matchStatus = p.saldo > 5;
+                else if (filtroStatus === 'baixo') matchStatus = p.saldo > 0 && p.saldo <= 5;
+                else if (filtroStatus === 'zerado') matchStatus = p.saldo === 0;
+                return matchBusca && matchStatus;
             });
-    }
-
-    async function editarProduto(nome) {
-        const novo = prompt(`Novo nome para "${nome}":`, nome);
-        if (!novo || novo.trim() === nome) return;
-        const novNome = novo.trim();
-        const { error } = await db.from('produtos').update({ nome: novNome }).eq('nome', nome);
-        if (error) { alert('Erro ao renomear: ' + error.message); return; }
-        await db.from('historico').update({ produto: novNome }).eq('produto', nome);
-        await carregar();
-    }
-
-    async function deletarProduto(nome) {
-        if (!confirm(`Remover "${nome}" e todo o histórico relacionado?`)) return;
-        const { error: e1 } = await db.from('historico').delete().eq('produto', nome);
-        const { error: e2 } = await db.from('produtos').delete().eq('nome', nome);
-        if (e1 || e2) { alert('Erro ao remover: ' + (e1 || e2).message); return; }
-        await carregar();
-    }
-
-    function filtrarPorStatus(status, btn) {
-        filtroStatus = status;
-        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-        btn.classList.add('active');
-        aplicarFiltros();
-    }
-
-    function aplicarFiltros() {
-        const busca = document.getElementById('buscaProdutos').value.trim().toLowerCase();
-        
-        produtosFiltrados = BD.produtos.filter(p => {
-            const matchBusca = !busca || p.nome.toLowerCase().includes(busca);
-            
-            let matchStatus = true;
-            if (filtroStatus === 'ok') matchStatus = p.saldo > 5;
-            else if (filtroStatus === 'baixo') matchStatus = p.saldo > 0 && p.saldo <= 5;
-            else if (filtroStatus === 'zerado') matchStatus = p.saldo === 0;
-            
-            return matchBusca && matchStatus;
-        });
-
-        // Aplicar ordenação
-        produtosFiltrados.sort((a, b) => {
-            let valA = a[ordenacao.coluna];
-            let valB = b[ordenacao.coluna];
-            
-            if (typeof valA === 'string') {
-                valA = valA.toLowerCase();
-                valB = valB.toLowerCase();
-            }
-            
-            if (valA < valB) return ordenacao.ascendente ? -1 : 1;
-            if (valA > valB) return ordenacao.ascendente ? 1 : -1;
-            return 0;
-        });
-
-        renderizarTabela();
-    }
-
-    function ordenarPor(coluna) {
-        if (ordenacao.coluna === coluna) {
-            ordenacao.ascendente = !ordenacao.ascendente;
-        } else {
-            ordenacao.coluna = coluna;
-            ordenacao.ascendente = true;
-        }
-        aplicarFiltros();
-    }
-
-    function renderizarTabela() {
-        const tbody = document.getElementById('tabelaProdutos');
-        const contador = document.getElementById('contadorProdutos');
-        
-        if (produtosFiltrados.length === 0) { 
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="4" class="empty-state">
-                        <div class="empty-state-icon">📭</div>
-                        <h3>Nenhum produto encontrado</h3>
-                        <div>Tente ajustar os filtros de busca</div>
-                    </td>
-                </tr>`; 
-            contador.innerHTML = `Mostrando <span class="count">0</span> de ${BD.produtos.length} produtos`;
-            return; 
-        }
-        
-        tbody.innerHTML = '';
-        produtosFiltrados.forEach((prod) => {
-            const saldo = prod.saldo || 0;
-            const safe = prod.nome.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-            
-            let badgeClass = 'badge-success';
-            let badgeText = 'OK';
-            let badgeIcon = '✓';
-            
-            if (saldo === 0) {
-                badgeClass = 'badge-danger';
-                badgeText = 'Zerado';
-                badgeIcon = '✕';
-            } else if (saldo <= 5) {
-                badgeClass = 'badge-warning';
-                badgeText = 'Baixo';
-                badgeIcon = '!';
-            }
-            
-            tbody.innerHTML += `
-                <tr>
-                    <td style="font-weight:500">${prod.nome}</td>
-                    <td style="font-weight:700;font-size:1.1rem">${saldo}</td>
-                    <td><span class="badge ${badgeClass}"><span>${badgeIcon}</span> ${badgeText}</span></td>
-                    <td>
-                        <div class="actions">
-                            <button class="btn-primary btn-sm" onclick="editarProduto('${safe}')">✏️ Editar</button>
-                            <button class="btn-danger btn-sm" onclick="deletarProduto('${safe}')">🗑️ Excluir</button>
-                        </div>
-                    </td>
-                </tr>`;
-        });
-        
-        contador.innerHTML = `Mostrando <span class="count">${produtosFiltrados.length}</span> de ${BD.produtos.length} produtos`;
-    }
-
-    // ===== AUTOCOMPLETE =====
-    let indiceSugestao = -1;
-
-    function mostrarSugestoes(texto) {
-        const dropdown = document.getElementById("sugestoesBusca");
-        indiceSugestao = -1;
-        if (!texto || texto.length < 1) { ocultarSugestoes(); return; }
-        const termoLower = texto.toLowerCase();
-        const matches = BD.produtos.filter(function(p) { return p.nome.toLowerCase().includes(termoLower); }).slice(0, 8);
-        if (matches.length === 0) { ocultarSugestoes(); return; }
-        dropdown.innerHTML = "";
-        matches.forEach(function(prod) {
-            const item = document.createElement("div");
-            item.className = "autocomplete-item";
-            const nomeLower = prod.nome.toLowerCase();
-            const pos = nomeLower.indexOf(termoLower);
-            if (pos >= 0) {
-                item.innerHTML = prod.nome.substring(0, pos) + "<strong>" + prod.nome.substring(pos, pos + texto.length) + "</strong>" + prod.nome.substring(pos + texto.length);
-            } else {
-                item.textContent = prod.nome;
-            }
-            item.addEventListener("mousedown", function(e) {
-                e.preventDefault();
-                document.getElementById("buscaProdutos").value = prod.nome;
-                ocultarSugestoes();
-                aplicarFiltros();
+            produtosFiltrados.sort((a, b) => {
+                let valA = a[ordenacao.coluna];
+                let valB = b[ordenacao.coluna];
+                if (typeof valA === 'string') { valA = valA.toLowerCase(); valB = valB.toLowerCase(); }
+                if (valA < valB) return ordenacao.ascendente ? -1 : 1;
+                if (valA > valB) return ordenacao.ascendente ? 1 : -1;
+                return 0;
             });
-            dropdown.appendChild(item);
-        });
-        dropdown.classList.add("aberto");
-    }
+            renderizarTabela();
+        }
 
-    function ocultarSugestoes() {
-        const d = document.getElementById("sugestoesBusca");
-        d.classList.remove("aberto");
-        d.innerHTML = "";
-        indiceSugestao = -1;
-    }
+        function ordenarPor(coluna) {
+            if (ordenacao.coluna === coluna) ordenacao.ascendente = !ordenacao.ascendente;
+            else { ordenacao.coluna = coluna; ordenacao.ascendente = true; }
+            aplicarFiltros();
+        }
 
-    function navegarSugestoes(dir) {
-        const items = document.querySelectorAll(".autocomplete-item");
-        if (!items.length) return;
-        items.forEach(function(i) { i.classList.remove("selecionado"); });
-        indiceSugestao += dir;
-        if (indiceSugestao < 0) indiceSugestao = items.length - 1;
-        if (indiceSugestao >= items.length) indiceSugestao = 0;
-        items[indiceSugestao].classList.add("selecionado");
-        items[indiceSugestao].scrollIntoView({ block: "nearest" });
-    }
+        function renderizarTabela() {
+            const tbody = document.getElementById('tabelaProdutos');
+            const contador = document.getElementById('contadorProdutos');
+            if (produtosFiltrados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="empty-state"><div class="empty-state-icon">📭</div><h3>Nenhum produto encontrado</h3><div>Tente ajustar os filtros de busca</div></td></tr>';
+                contador.innerHTML = 'Mostrando <span class="count">0</span> de ' + BD.produtos.length + ' produtos';
+                return;
+            }
+            tbody.innerHTML = '';
+            produtosFiltrados.forEach(prod => {
+                const saldo = prod.saldo || 0;
+                const safe = prod.nome.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+                let badgeClass = 'badge-success', badgeText = 'OK', badgeIcon = '✓';
+                if (saldo === 0) { badgeClass = 'badge-danger'; badgeText = 'Zerado'; badgeIcon = '✕'; }
+                else if (saldo <= 5) { badgeClass = 'badge-warning'; badgeText = 'Baixo'; badgeIcon = '!'; }
+                tbody.innerHTML += '<tr><td style="font-weight:500">' + prod.nome + '</td><td style="font-weight:700;font-size:1.1rem">' + saldo + '</td><td><span class="badge ' + badgeClass + '"><span>' + badgeIcon + '</span> ' + badgeText + '</span></td><td><div class="actions"><button class="btn-primary btn-sm" onclick="editarProduto(\'' + safe + '\')">✏️ Editar</button><button class="btn-danger btn-sm" onclick="deletarProduto(\'' + safe + '\')">🗑️ Excluir</button></div></td></tr>';
+            });
+            contador.innerHTML = 'Mostrando <span class="count">' + produtosFiltrados.length + '</span> de ' + BD.produtos.length + ' produtos';
+        }
 
-    // Event listeners
-    const inputBusca = document.getElementById("buscaProdutos");
-    inputBusca.addEventListener("input", function() {
-        mostrarSugestoes(this.value.trim());
-        aplicarFiltros();
-    });
-    inputBusca.addEventListener("keydown", function(e) {
-        const dropdown = document.getElementById("sugestoesBusca");
-        const aberto = dropdown.classList.contains("aberto");
-        if (e.key === "ArrowDown") {
-            e.preventDefault();
-            if (!aberto) mostrarSugestoes(this.value.trim());
-            else navegarSugestoes(1);
-        } else if (e.key === "ArrowUp") {
-            e.preventDefault();
-            navegarSugestoes(-1);
-        } else if (e.key === "Enter") {
-            if (aberto && indiceSugestao >= 0) {
-                const items = document.querySelectorAll(".autocomplete-item");
-                if (items[indiceSugestao]) {
-                    this.value = items[indiceSugestao].textContent;
+        // ===== AUTOCOMPLETE =====
+        let indiceSugestao = -1;
+
+        function mostrarSugestoes(texto) {
+            const dropdown = document.getElementById('sugestoesBusca');
+            indiceSugestao = -1;
+            if (!texto || texto.length < 1) { ocultarSugestoes(); return; }
+            const termoLower = texto.toLowerCase();
+            const matches = BD.produtos.filter(p => p.nome.toLowerCase().includes(termoLower)).slice(0, 8);
+            if (matches.length === 0) { ocultarSugestoes(); return; }
+            dropdown.innerHTML = '';
+            matches.forEach(prod => {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                const nomeLower = prod.nome.toLowerCase();
+                const pos = nomeLower.indexOf(termoLower);
+                if (pos >= 0) {
+                    item.innerHTML = prod.nome.substring(0, pos) + '<strong>' + prod.nome.substring(pos, pos + texto.length) + '</strong>' + prod.nome.substring(pos + texto.length);
+                } else {
+                    item.textContent = prod.nome;
+                }
+                item.addEventListener('mousedown', e => {
+                    e.preventDefault();
+                    document.getElementById('buscaProdutos').value = prod.nome;
                     ocultarSugestoes();
                     aplicarFiltros();
-                    e.preventDefault();
-                    return;
-                }
-            }
-            ocultarSugestoes();
-            aplicarFiltros();
-        } else if (e.key === "Escape") {
-            ocultarSugestoes();
+                });
+                dropdown.appendChild(item);
+            });
+            dropdown.classList.add('aberto');
         }
-    });
-    inputBusca.addEventListener("blur", function() {
-        setTimeout(ocultarSugestoes, 150);
-    });
-    document.addEventListener("click", function(e) {
-        if (!e.target.closest(".search-box")) ocultarSugestoes();
-    });
-    });
-</script>
+
+        function ocultarSugestoes() {
+            const d = document.getElementById('sugestoesBusca');
+            d.classList.remove('aberto');
+            d.innerHTML = '';
+            indiceSugestao = -1;
+        }
+
+        function navegarSugestoes(dir) {
+            const items = document.querySelectorAll('.autocomplete-item');
+            if (!items.length) return;
+            items.forEach(i => i.classList.remove('selecionado'));
+            indiceSugestao += dir;
+            if (indiceSugestao < 0) indiceSugestao = items.length - 1;
+            if (indiceSugestao >= items.length) indiceSugestao = 0;
+            items[indiceSugestao].classList.add('selecionado');
+            items[indiceSugestao].scrollIntoView({ block: 'nearest' });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputBusca = document.getElementById('buscaProdutos');
+
+            inputBusca.addEventListener('input', function() {
+                mostrarSugestoes(this.value.trim());
+                aplicarFiltros();
+            });
+
+            inputBusca.addEventListener('keydown', function(e) {
+                const dropdown = document.getElementById('sugestoesBusca');
+                const aberto = dropdown.classList.contains('aberto');
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (!aberto) mostrarSugestoes(this.value.trim());
+                    else navegarSugestoes(1);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    navegarSugestoes(-1);
+                } else if (e.key === 'Enter') {
+                    if (aberto && indiceSugestao >= 0) {
+                        const items = document.querySelectorAll('.autocomplete-item');
+                        if (items[indiceSugestao]) {
+                            this.value = items[indiceSugestao].textContent;
+                            ocultarSugestoes();
+                            aplicarFiltros();
+                            e.preventDefault();
+                            return;
+                        }
+                    }
+                    ocultarSugestoes();
+                    aplicarFiltros();
+                } else if (e.key === 'Escape') {
+                    ocultarSugestoes();
+                }
+            });
+
+            inputBusca.addEventListener('blur', function() {
+                setTimeout(ocultarSugestoes, 150);
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.search-box')) ocultarSugestoes();
+            });
+
+            verificarAuth().then(ok => {
+                if (ok) {
+                    carregar();
+                    configurarRealtime();
+                }
+            });
+        });
+    </script>
 </body>
 </html>

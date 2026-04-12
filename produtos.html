@@ -244,7 +244,38 @@
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
         }
 
-        /* Filter Buttons */
+        /* Autocomplete Suggestions */
+        .autocomplete-dropdown {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0; right: 0;
+            background: var(--bg-elevated);
+            border: 1px solid var(--primary);
+            border-radius: var(--radius-sm);
+            max-height: 240px;
+            overflow-y: auto;
+            z-index: 200;
+            box-shadow: var(--shadow-lg);
+            display: none;
+        }
+        .autocomplete-dropdown.aberto { display: block; }
+        .autocomplete-item {
+            padding: 10px 14px 10px 42px;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: background 0.15s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .autocomplete-item:hover,
+        .autocomplete-item.selecionado {
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--primary-light);
+        }
+        .autocomplete-item strong { color: var(--primary-light); }
+                /* Filter Buttons */
         .filter-buttons {
             display: flex;
             gap: 8px;
@@ -622,8 +653,11 @@
                 <div class="card-icon">📋</div>
                 <h2>Produtos em Estoque</h2>
             </div>
-<div class="search-box" style="display:flex;gap:8px;align-items:center;flex:1;max-width:420px;">
+<div class="search-box" style="display:flex;gap:8px;align-items:flex-start;flex:1;max-width:420px;">
+                <div style="position:relative;flex:1;">
                     <input type="text" id="buscaProdutos" placeholder="Buscar produtos..." autocomplete="off">
+                    <div id="sugestoesBusca" class="autocomplete-dropdown"></div>
+                </div>
                     <button class="btn-primary" onclick="aplicarFiltros()" style="white-space:nowrap;padding:12px 16px;">🔍 Buscar</button>
                 </div>
         </div>
@@ -824,15 +858,95 @@
         contador.innerHTML = `Mostrando <span class="count">${produtosFiltrados.length}</span> de ${BD.produtos.length} produtos`;
     }
 
-    // Event listeners
-    document.getElementById('buscaProdutos').addEventListener('input', aplicarFiltros);         document.getElementById('buscaProdutos').addEventListener('keyup', aplicarFiltros);
-        document.getElementById('buscaProdutos').addEventListener('keypress', function(e) { if (e.key === 'Enter') aplicarFiltros(); });
+    // ===== AUTOCOMPLETE =====
+    let indiceSugestao = -1;
 
-    verificarAuth().then(ok => {
-        if (ok) carregar().then(() => {
-            esconderOverlay();
-            configurarRealtime();
+    function mostrarSugestoes(texto) {
+        const dropdown = document.getElementById("sugestoesBusca");
+        indiceSugestao = -1;
+        if (!texto || texto.length < 1) { ocultarSugestoes(); return; }
+        const termoLower = texto.toLowerCase();
+        const matches = BD.produtos.filter(function(p) { return p.nome.toLowerCase().includes(termoLower); }).slice(0, 8);
+        if (matches.length === 0) { ocultarSugestoes(); return; }
+        dropdown.innerHTML = "";
+        matches.forEach(function(prod) {
+            const item = document.createElement("div");
+            item.className = "autocomplete-item";
+            const nomeLower = prod.nome.toLowerCase();
+            const pos = nomeLower.indexOf(termoLower);
+            if (pos >= 0) {
+                item.innerHTML = prod.nome.substring(0, pos) + "<strong>" + prod.nome.substring(pos, pos + texto.length) + "</strong>" + prod.nome.substring(pos + texto.length);
+            } else {
+                item.textContent = prod.nome;
+            }
+            item.addEventListener("mousedown", function(e) {
+                e.preventDefault();
+                document.getElementById("buscaProdutos").value = prod.nome;
+                ocultarSugestoes();
+                aplicarFiltros();
+            });
+            dropdown.appendChild(item);
         });
+        dropdown.classList.add("aberto");
+    }
+
+    function ocultarSugestoes() {
+        const d = document.getElementById("sugestoesBusca");
+        d.classList.remove("aberto");
+        d.innerHTML = "";
+        indiceSugestao = -1;
+    }
+
+    function navegarSugestoes(dir) {
+        const items = document.querySelectorAll(".autocomplete-item");
+        if (!items.length) return;
+        items.forEach(function(i) { i.classList.remove("selecionado"); });
+        indiceSugestao += dir;
+        if (indiceSugestao < 0) indiceSugestao = items.length - 1;
+        if (indiceSugestao >= items.length) indiceSugestao = 0;
+        items[indiceSugestao].classList.add("selecionado");
+        items[indiceSugestao].scrollIntoView({ block: "nearest" });
+    }
+
+    // Event listeners
+    const inputBusca = document.getElementById("buscaProdutos");
+    inputBusca.addEventListener("input", function() {
+        mostrarSugestoes(this.value.trim());
+        aplicarFiltros();
+    });
+    inputBusca.addEventListener("keydown", function(e) {
+        const dropdown = document.getElementById("sugestoesBusca");
+        const aberto = dropdown.classList.contains("aberto");
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            if (!aberto) mostrarSugestoes(this.value.trim());
+            else navegarSugestoes(1);
+        } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            navegarSugestoes(-1);
+        } else if (e.key === "Enter") {
+            if (aberto && indiceSugestao >= 0) {
+                const items = document.querySelectorAll(".autocomplete-item");
+                if (items[indiceSugestao]) {
+                    this.value = items[indiceSugestao].textContent;
+                    ocultarSugestoes();
+                    aplicarFiltros();
+                    e.preventDefault();
+                    return;
+                }
+            }
+            ocultarSugestoes();
+            aplicarFiltros();
+        } else if (e.key === "Escape") {
+            ocultarSugestoes();
+        }
+    });
+    inputBusca.addEventListener("blur", function() {
+        setTimeout(ocultarSugestoes, 150);
+    });
+    document.addEventListener("click", function(e) {
+        if (!e.target.closest(".search-box")) ocultarSugestoes();
+    });
     });
 </script>
 </body>
